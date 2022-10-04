@@ -30,6 +30,7 @@ resources = {
     "water": 300,
     "milk": 200,
     "coffee": 100,
+    "money" : 0
 }
 
 coins={"Penny" : 0.01,
@@ -37,7 +38,7 @@ coins={"Penny" : 0.01,
 "Dime":0.10,
 "Quarter":0.25}
 
-money=0
+
 
 def coin_ask():
     pennies = int(input("How much Penny do you have?: "))
@@ -48,22 +49,39 @@ def coin_ask():
     return totall_check
 
 def coffee_maker(ordered):
-    resources["coffee"]-=MENU[ordered]["ingredients"]["coffee"]
-    resources["water"]-=MENU[ordered]["ingredients"]["water"]
-    resources["milk"]-=MENU[ordered]["ingredients"]["milk"]
-    money+=MENU[ordered]['cost']
-
+    if ordered=='latte' or ordered=="cappuccino":
+        resources["coffee"]-=MENU[ordered]["ingredients"]["coffee"]
+        resources["water"]-=MENU[ordered]["ingredients"]["water"]
+        resources["milk"]-=MENU[ordered]["ingredients"]["milk"]
+        resources["money"]+=MENU[ordered]['cost']
+    elif ordered=='espresso':
+        resources["coffee"]-=MENU[ordered]["ingredients"]["coffee"]
+        resources["water"]-=MENU[ordered]["ingredients"]["water"]
+        resources["money"]+=MENU[ordered]['cost']
     
+   
+
 
 def coffee_machine():
+    order=input("What would you like? (espresso/latte/cappuccino): ")
     
-    order=input("What would you like? (espresso/latte/cappuccino): ").lower
-    if order=='report':
-        print(f"Water: {resources['water']}n\
-            Milk: {resources['milk']}n\
-            Coffee: {resources['coffee']}n\
-            Money:${money}")
+    if order=="report":
+        print(f"Water: {resources['water']}\nMilk: {resources['milk']}\nCoffee: {resources['coffee']}\nMoney:${resources['money']}")
     else:
-        print("Please insert coins")
-        if coin_ask()>=MENU[order]['cost']:
-            coffee_maker(order)
+        if resources["coffee"]<MENU[order]["ingredients"]["coffee"]:
+            print("Not enough coffee")
+        elif resources["water"]<MENU[order]["ingredients"]["water"]:
+            print("Sorry there is not enough water")
+        elif order!="espresso" and resources["milk"]<MENU[order]["ingredients"]["milk"]:
+            print("Sorry there is not enough milk")
+        else:   
+            print("Please insert coins")
+            money_inside=coin_ask()
+            if money_inside>=MENU[order]['cost']:
+                coffee_maker(order)
+                print(f"Here is ${round(money_inside-MENU[order]['cost'],2)} in change")
+                print(f"Here is your {order}. Enjoy!")
+            else:
+                print("Thats not enough money.")
+    coffee_machine()
+coffee_machine()
